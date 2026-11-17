@@ -15,3 +15,20 @@ sum_columns:
     sw s6, 16(sp) #s6 is thestart of the column that we're on
     sw s7, 12(sp) #s7 is for row
     sw s8, 8(sp) #s8 is for the iverflow
+
+
+    or s0,a1, zero #s0 = nrow (overriding a1 so copy it now)
+    or s1, a2, zero
+    or s6, a0, zero #s6= &matrix (0,0) starts at base
+
+
+    or s4, a3, zero #s4 =&sum of 0
+    slli s7, s1, 2 #stride= ncol * 4
+    xor s2, s2, s2 #i =0 (xor a reg withitself = 0)
+
+
+    xor s8, s8, s8 #overflow flag = 0
+col_loop: #one pass per column (this is the outside loop)
+    bge s2,s1, done # if i >= ncol, then every column is ran through, jump to done
+
+
