@@ -29,6 +29,8 @@ sum_columns:
 
     xor s8, s8, s8 #overflow flag = 0
 col_loop: #one pass per column (this is the outside loop)
-    bge s2,s1, done # if i >= ncol, then every column is ran through, jump to done
-
+    bge s2,s1, done # if i greater than or equal to ncol, then every column is ran through, jump to done
+    sw zero, 0(s4) # sum[i ] =0
+    xor s3, s3, s3 
+    or s5,s6, zero
 
