@@ -1,5 +1,19 @@
-
 #SECTION 1: UNSIGNED COLUMN SUM
+
+#adds two #'s without using add
+#in= a0= x, a1= y
+#out= a0= x+y, a1= 1 if it OW
+do_add:
+    xor t2, t2, t2 #t2 is the OW mark so it = 0
+do_add_loop:
+    and t0, a0, a1 # t0= the carry
+    xor a0,a0, a1 # a0 = sum without carrys
+    srli t1, t0,31 # t1= top bit of the carries, carry out of 31 means OW
+    or t2, t2, t1 #keep if it was = 1
+    slli a1, t0, 1 # a1 =the carries moved up one bit
+    bne a1, zero, do_add_loop # go around agin if it goes left
+    or a1,t2, zero # a1= OW marker
+    ret
 sum_columns:
     addi sp, sp, -48 #make room stack for 10 words 
     sw ra, 44(sp) #save ra
