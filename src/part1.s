@@ -34,7 +34,7 @@ col_loop: #one pass per column (this is the outside loop)
     xor s3, s3, s3 
     or s5,s6, zero
 
-row_loop: #inner loop
+    row_loop: #inner loop
     bge s3, s0, row_done # if k greater than or equal to nrow go to done
     lw a0, 0(s4) #a0 = sum[i] (loading it each time, like the C does)
     lw a1, 0(s5) #a1 = matrix[k][i]
@@ -55,14 +55,21 @@ row_loop: #inner loop
     or s3, a0, zero #k=k+ 1
     j row_loop
 
-row_done: # finished one column, set up the next
-    or   a0, s4, zero # a0 =&sum[i]
-    ori  a1, zero, 4 #a1 =4
-    jal  ra, do_add # a0= &sum[i] +4
+    row_done: #finished one column, start setting up the next onee
+    or  a0, s4, zero # a0 =&sum[i]
+    ori a1, zero, 4 #a1 =4
+    jal ra, do_add # a0= &sum[i] +4
 
-    or   s4, a0, zero #S4 pointing to sum[i + 1]
-    or   a0, s6, zero #a0= top of col
-    ori  a1, zero, 4# a1= 4
-
+    or  s4,  a0, zero #S4 pointing to sum[i + 1]
+    or  a0, s6, zero #a0= top of col
+    ori a1, zero, 4# a1= 4
+    
+    jal ra, do_add #a0= the next col to the right
+    or s6 a0, zero  #s6= top next col
+    or a0, s2, zero #a0=i
+    ori a1, zero, 1 # a1= 1
+    jal ra, do_add #a0= i + 1
+    or s2, a0, zero # i= i + 1
+    j col_loop
 
 
