@@ -1,31 +1,27 @@
+
 #SECTION 1: UNSIGNED COLUMN SUM
 sum_columns:
     addi sp, sp, -48 #make room stack for 10 words 
     sw ra, 44(sp) #save ra
     sw s0, 40(sp) #s0
 
-
     sw s1, 36(sp) #s1=ncol
     sw s2, 32(sp) #s2 =i
     sw s3, 28(sp) #s3=k
     sw s4, 24(sp)  #s4=pointer to sum of i
-
 
     sw s5, 20(sp) #s5= pointer to matrix(k,i)
     sw s6, 16(sp) #s6 is thestart of the column that we're on
     sw s7, 12(sp) #s7 is for row
     sw s8, 8(sp) #s8 is for the iverflow
 
-
     or s0,a1, zero #s0 = nrow (overriding a1 so copy it now)
     or s1, a2, zero
     or s6, a0, zero #s6= &matrix (0,0) starts at base
 
-
     or s4, a3, zero #s4 =&sum of 0
     slli s7, s1, 2 #stride= ncol * 4
     xor s2, s2, s2 #i =0 (xor a reg withitself = 0)
-
 
     xor s8, s8, s8 #overflow flag = 0
 col_loop: #one pass per column (this is the outside loop)
@@ -67,9 +63,28 @@ col_loop: #one pass per column (this is the outside loop)
     jal ra, do_add #a0= the next col to the right
     or s6,a0, zero  #s6= top next col
     or a0, s2, zero #a0=i
+
     ori a1, zero, 1 # a1= 1
     jal ra, do_add #a0= i + 1
     or s2, a0, zero # i= i + 1
+
     j col_loop
 
+done:
+    or a0, s8, zero # put the overflow flag in a0 as the return value
+    lw ra, 44(sp) # restore all s registers and saved registers in general (same offset as saved)
+    lw s0, 40(sp)
+
+    lw s1, 36(sp)
+    lw s2, 32(sp)
+    lw s3, 28(sp)
+
+    lw s4, 24(sp)
+    lw s5, 20(sp)
+    lw s6, 16(sp)
+
+    lw s7,12(sp)
+    lw s8, 8(sp)
+    addi sp,sp, 48
+    ret
 
