@@ -65,7 +65,7 @@ col_loop: #one pass per column (this is the outside loop)
     ori a1, zero, 4# a1= 4
     
     jal ra, do_add #a0= the next col to the right
-    or s6 a0, zero  #s6= top next col
+    or s6,a0, zero  #s6= top next col
     or a0, s2, zero #a0=i
     ori a1, zero, 1 # a1= 1
     jal ra, do_add #a0= i + 1
