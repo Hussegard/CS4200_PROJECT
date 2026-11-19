@@ -1,3 +1,17 @@
+#SECTION 2:
+# same do_add fn
+do_add:
+    xor t2, t2, t2 #t2 is the OW mark so it = 0
+do_add_loop:
+    and t0, a0, a1 # t0= the carry
+    xor a0,a0, a1 # a0 = sum without carrys
+    srli t1, t0,31 # t1= top bit of the carries, carry out of 31 means OW
+    or t2, t2, t1 #keep if it was = 1
+    slli a1, t0, 1 # a1 =the carries moved up one bit
+    bne a1, zero, do_add_loop # go around agin if it goes left
+    or a1,t2, zero # a1= OW marker
+    ret
+
 sum_columns:
     addi sp, sp, -48 # make room
     sw ra, 44(sp)
@@ -57,7 +71,25 @@ col_done: # finished one row, start setting up the next one
     jal ra, do_add #a0= i + 1
 
     or s2,a0, zero #i++
-    j row_loop
+    j row_loop #jump
 
 done:
-    or a0, s7,
+    or a0, s7 #a0 holds OW mark
+
+    #load the previously stored registers
+    lw ra, 44(sp)
+    lw 
+
+    lw s0, 40(sp)
+    lw s1, 36(sp)
+    lw s2, 32(sp)
+    lw s3, 28(sp)
+
+    lw s4, 24(sp)
+    lw s5, 22(sp)
+    lw s6, 18(sp)
+    lw s7, 12(sp)
+
+    addi sp, sp, 48
+    ret
+
