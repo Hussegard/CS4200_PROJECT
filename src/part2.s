@@ -26,5 +26,38 @@ row_loop: #outside loop
      or s4, s6, zero #q = &sum[0] (the start of it again
 
 col_loop: #inside loop, goes across one row
-    bge s3, s1, col_done # if k greater or equal to ncol, current row finsihes go to done
+    bge s3,s1, col_done # if k greater or equal to ncol, current row finsihes go to done
     lw a0, 0(s4) #a0 =sum[k]
+    lw a1, 0(s5) # a1=matrix(i,k)
+
+    jal ra, do_add #a0=sum[k] + matrix[i][k], a1= OW flag
+    sw a0, 0(s4) #write total again inside sum[k]
+    or s7, s7, a1 #mark set if any add OW
+
+    or a0, s5, zero #a0= p
+    ori a1,zero, 4 # a1 = 4 (1 word)
+    jal ra, do_add # a0= p+4, next number in the same row
+
+    or s5, a0, zero # p = new addr
+    or a0, s4, zero #a0= q
+    ori a1, zero, 4 #a1 = 4
+
+    jal ra, do_add #a0= q+4 (grab the one infront of it now)
+    or s4, a0, zero # q = that new address
+    or a0, s3, zero # a0 = k
+
+    ori a1, zero, 1
+    jal ra, do_add #a0= k + 1
+    or s3, a0,zero #k = k++
+
+    j col_loop
+col_done: # finished one row, start setting up the next one
+    or a0,s2, zero #a0= i
+    ori a1, zero,1 #a1= 1
+    jal ra, do_add #a0= i + 1
+
+    or s2,a0, zero #i++
+    j row_loop
+
+done:
+    or a0, s7,
